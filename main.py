@@ -1,16 +1,23 @@
 import csv
 import io
-from fastapi import FastAPI,Request,Form ,status,Response
+import os
+import shutil
+import uuid
+from typing import List
+from fastapi import FastAPI, Request, Form, UploadFile, File, status, Response
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from auth import login as db_login
 from auth import register as db_register
 from fastapi.responses import RedirectResponse
 from labeling import get_next_task, labeler,get_remaining_count,completed_task,export_ended_task
-from input import parse_text_input, create_project,project_adder_text,get_project
+from input import parse_text_input, parse_word_input, create_project,project_adder_text,get_project
 
 
 
 app=FastAPI()
+os.makedirs("static/uploads", exist_ok=True)
+app.mount("/static", StaticFiles(directory="static"), name="static")
 templates=Jinja2Templates(directory="Templates")
 
 @app.get("/")
@@ -119,6 +126,75 @@ async def create_project_post(request :Request,project_name :str=Form(...) ,raw_
     project_adder_text(project_id,int(user_id),cleandata)
 
     return RedirectResponse(url=f"/sentence?project_id={project_id}", status_code=status.HTTP_303_SEE_OTHER)
+
+@app.get("/image")
+def image_get(request: Request, project_id: int = None):
+    user_id = request.cookies.get("user_id")
+    if not user_id:
+        return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
+    
+    task = None
+    show_task = []
+    show_task_count = 0
+    task_id = None
+    content = ""
+    if project_id:
+        task = get_next_task(int(user_id), project_id=project_id)
+        show_task = completed_task(int(project_id))
+        show_task_count = get_remaining_count(int(project_id))
+        if task:
+            task_id = task[0]
+            content = task[1]
+        else:
+            task_id = None
+            content = ""
+
+    projects = get_project(int(user_id))
+
+    return templates.TemplateResponse(request=request, name="image.html", context={
+        "task_id": task_id,
+        "task_content": content,
+        "projects": projects,
+        "selected_project_id": project_id,
+        "remaining_count": show_task_count,
+        "completed_tasks": show_task
+    })
+
+@app.post("/image")
+def image_post(request: Request, task_id: int = Form(...), label_id=Form(...), project_id: int = Form(...)):
+    user_id = request.cookies.get("user_id")
+    if not user_id:
+        return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
+    labeler(task_id, label_id, int(user_id))
+    return RedirectResponse(url=f"/image?project_id={project_id}", status_code=status.HTTP_303_SEE_OTHER)
+
+@app.post("/create-project-image")
+async def create_project_image_post(request: Request, project_name: str = Form(...), files: List[UploadFile] = File(...)):
+    user_id = request.cookies.get("user_id")
+    if not user_id:
+        return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
+
+    project_id = create_project(int(user_id), project_name, f"{len(files)} görsel yüklendi", "IMAGE")
+
+    image_paths = []
+    upload_dir = os.path.join("static", "uploads")
+    os.makedirs(upload_dir, exist_ok=True)
+
+    for file in files:
+        if file.filename:
+            file_ext = os.path.splitext(file.filename)[1]
+            unique_filename = f"{uuid.uuid4().hex}{file_ext}"
+            file_path = os.path.join(upload_dir, unique_filename)
+            
+            with open(file_path, "wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
+            
+            relative_url = f"/static/uploads/{unique_filename}"
+            image_paths.append(relative_url)
+
+    project_adder_text(project_id, int(user_id), image_paths)
+
+    return RedirectResponse(url=f"/image?project_id={project_id}", status_code=status.HTTP_303_SEE_OTHER)
 
 
 
