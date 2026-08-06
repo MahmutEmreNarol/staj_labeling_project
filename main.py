@@ -6,7 +6,7 @@ from auth import login as db_login
 from auth import register as db_register
 from fastapi.responses import RedirectResponse
 from labeling import get_next_task, labeler,get_remaining_count,completed_task,export_ended_task
-from input import parse_text_input, create_project,project_adder_text,get_project
+from input import parse_text_input, parse_word_input, create_project,project_adder_text,get_project
 
 
 
@@ -106,6 +106,59 @@ def sentence_post(request :Request,task_id:int =Form(...),label_id=Form(...),pro
     labeler(task_id,label_id,int(user_id))
     ##parse_text_input(raw_text=raw_text)
     return RedirectResponse(url=f"/sentence?project_id={project_id}", status_code=status.HTTP_303_SEE_OTHER)
+
+@app.get("/word")
+def word_get(request: Request, project_id: int = None):
+    user_id = request.cookies.get("user_id")
+    if not user_id:
+        return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
+    
+    task = None
+    show_task = []
+    show_task_count = 0
+    task_id = None
+    content = ""
+    if project_id:
+        task = get_next_task(int(user_id), project_id=project_id)
+        show_task = completed_task(int(project_id))
+        show_task_count = get_remaining_count(int(project_id))
+        if task:
+            task_id = task[0]
+            content = task[1]
+        else:
+            task_id = None
+            content = "Tebrikler Başka kelime kalmadı"
+
+    projects = get_project(int(user_id))
+
+    return templates.TemplateResponse(request=request, name="word.html", context={
+        "task_id": task_id,
+        "task_content": content,
+        "projects": projects,
+        "selected_project_id": project_id,
+        "remaining_count": show_task_count,
+        "completed_tasks": show_task
+    })
+
+@app.post("/word")
+def word_post(request: Request, task_id: int = Form(...), label_id=Form(...), project_id: int = Form(...)):
+    user_id = request.cookies.get("user_id")
+    if not user_id:
+        return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
+    labeler(task_id, label_id, int(user_id))
+    return RedirectResponse(url=f"/word?project_id={project_id}", status_code=status.HTTP_303_SEE_OTHER)
+
+@app.post("/create-project-word")
+async def create_project_word_post(request: Request, project_name: str = Form(...), raw_text: str = Form(...)):
+    user_id = request.cookies.get("user_id")
+    if not user_id:
+        return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
+
+    cleandata = parse_word_input(raw_text)
+    project_id = create_project(int(user_id), project_name, raw_text, "Word")
+    project_adder_text(project_id, int(user_id), cleandata)
+
+    return RedirectResponse(url=f"/word?project_id={project_id}", status_code=status.HTTP_303_SEE_OTHER)
 
 @app.post("/create-project")
 async def create_project_post(request :Request,project_name :str=Form(...) ,raw_text:str=Form()):

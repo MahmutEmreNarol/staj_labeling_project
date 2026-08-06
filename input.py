@@ -23,6 +23,13 @@ def parse_text_input(raw_text:str):
 
     return clean_sentences
 
+def parse_word_input(raw_text: str):
+    if not raw_text:
+        return []
+    words = raw_text.split()
+    clean_words = [w.strip() for w in words if w.strip()]
+    return clean_words
+
 def create_project(user_id : int ,title : str , description:str,task_type:str):
     conn=dbconn()
     cur=conn.cursor()
