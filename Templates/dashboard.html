@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - AI Labeling Platform</title>
+    <link rel="stylesheet" href="/static/visual.css">
+</head>
+<body>
+    <header class="app-header">
+        <a href="/dashboard" class="brand"><span class="brand-icon">AI</span><span>Labeling Platform</span></a>
+        <nav class="header-nav" aria-label="Ana navigasyon">
+            <a href="/projects" class="btn btn-secondary btn-sm">Projects / Index</a>
+            <a href="/logout" class="btn btn-danger btn-sm">Çıkış</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="dashboard-hero">
+            <div>
+                <div class="eyebrow">AI Data Labeling / Workspace</div>
+                <h1 class="display-title">Veriyi anlamlı hale getir.</h1>
+                <p class="page-intro">Metin, görsel ve nesne veri setlerini tek bir sakin çalışma alanında yapılandırın, etiketleyin ve dışa aktarın.</p>
+            </div>
+            <aside class="dashboard-note">
+                05 ANNOTATION MODES<br>
+                DYNAMIC LABEL SYSTEM<br>
+                CSV READY<br>
+                <span style="display:inline-block; margin-top:12px; color:var(--carbon);">SELECT A MODULE →</span>
+            </aside>
+        </section>
+
+        <div class="section-heading">Workspace modules / 01—05</div>
+        <section class="module-grid" aria-label="Etiketleme modülleri">
+            <article class="module-card"><div><div class="module-code"><span>01 / TEXT</span><span>CLASSIFY</span></div><h3>Cümle<br>Sınıflandırma</h3><p>Metinleri duygu, konu veya tanımladığınız özel kategorilere göre etiketleyin.</p></div><a href="/sentence" class="module-link">Çalışma alanını aç →</a></article>
+            <article class="module-card"><div><div class="module-code"><span>02 / WORD</span><span>CLASSIFY</span></div><h3>Kelime<br>Etiketleme</h3><p>Sözcükleri morfolojik veya anlamsal sınıflara ayırarak veri setinizi oluşturun.</p></div><a href="/word" class="module-link">Çalışma alanını aç →</a></article>
+            <article class="module-card"><div><div class="module-code"><span>03 / IMAGE</span><span>CLASSIFY</span></div><h3>Görsel<br>Etiketleme</h3><p>Görselleri yükleyin ve tanımladığınız kategorilerle tek tek sınıflandırın.</p></div><a href="/image" class="module-link">Çalışma alanını aç →</a></article>
+            <article class="module-card"><div><div class="module-code"><span>04 / NER</span><span>EXTRACT</span></div><h3>Named Entity<br>Recognition</h3><p>Metin içindeki kişi, kurum, konum ve özel varlıkları hassas biçimde işaretleyin.</p></div><a href="/NER" class="module-link">Çalışma alanını aç →</a></article>
+            <article class="module-card"><div><div class="module-code"><span>05 / OBJECT</span><span>DETECT</span></div><h3>Object<br>Detection</h3><p>Görseller üzerindeki nesneleri koordinat tabanlı bounding box alanlarıyla tanımlayın.</p></div><a href="/object" class="module-link">Çalışma alanını aç →</a></article>
+            <article class="module-card module-card--index"><div><div class="module-code"><span>INDEX / ALL</span><span>PROJECTS</span></div><h3>Proje arşivini<br>incele.</h3><p>Tüm projelerin ilerleme durumunu, türünü ve kalan görevlerini tek bir editorial index içinde görün.</p></div><a href="/projects" class="module-link">Tüm projelere git →</a></article>
+        </section>
+    </main>
+</body>
+</html>

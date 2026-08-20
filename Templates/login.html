@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş Yap - AI Labeling Platform</title>
+    <link rel="stylesheet" href="/static/visual.css">
+</head>
+<body>
+    <main class="auth-page">
+        <section class="auth-editorial">
+            <div class="auth-mark">AI Data Labeling / 2026</div>
+            <h1>Veriyi<br>okunabilir<br>kıl.</h1>
+            <p class="auth-caption">Metinlerden görsellere, ham veriyi düzenli ve dışa aktarılabilir annotation setlerine dönüştüren teknik çalışma alanı.</p>
+        </section>
+        <section class="auth-form-pane">
+            <div class="auth-form">
+                <div class="eyebrow">Session / Login</div>
+                <h2 class="auth-title">Çalışma alanına dön.</h2>
+                <p class="auth-copy">Etiketleme projelerinize devam etmek için bilgilerinizi girin.</p>
+                <form action="/login" method="post">
+            <div class="form-group">
+                <label for="email">E-posta Adresi</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="adiniz@ornek.com" required autocomplete="email">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Şifre</label>
+                <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+            </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">Giriş Yap →</button>
+                </form>
+                <div class="auth-switch">Hesabınız yok mu? <a href="/register">Kayıt oluştur</a></div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

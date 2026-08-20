@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projelerim - AI Labeling Platform</title>
+    <link rel="stylesheet" href="/static/visual.css">
+    <style>
+        .project-summary { display:flex; align-items:center; justify-content:space-between; gap:24px; cursor:pointer; list-style:none; user-select:none; }
+        .project-summary::-webkit-details-marker { display:none; }
+        .project-details { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; }
+        .meta-group { display:flex; gap:22px; color:var(--text-secondary); }
+    </style>
+</head>
+<body>
+
+    <header class="app-header">
+        <a href="/dashboard" class="brand">
+            <span class="brand-icon">AI</span>
+            <span>Labeling Platform</span>
+        </a>
+        <div class="header-nav">
+            <a href="/dashboard" class="btn btn-secondary btn-sm">← Workspace</a>
+            <a href="/logout" class="btn btn-danger btn-sm">Çıkış</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="projects-header">
+            <div><div class="eyebrow">Projects / All</div><h1 class="page-title">Proje<br>indeksi.</h1></div>
+            <p class="page-intro">Tüm etiketleme projelerini tür, ilerleme ve görev durumlarıyla katalog görünümünde inceleyin.</p>
+        </section>
+
+        <div class="projects-list">
+            {% if projects %}
+                {% for project in projects %}
+                    {% set progress_data = calculate_progress(project[0]) %}
+                    {% set percentage = progress_data[2] %}
+                    
+                    <details class="project-card">
+                        <summary class="project-summary">
+                            <div style="display: flex; align-items: center; gap: 14px; flex: 1;">
+                                <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted);">#{{ project[0] }}</span>
+                                <div>
+                                    <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--text-primary); margin-bottom: 2px;">
+                                        {{ project[2] }}
+                                    </h3>
+                                    <span style="font-size: 0.8rem; color: var(--text-muted);">{{ project[3] or 'Açıklama yok' }}</span>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; align-items: center; gap: 16px; min-width: 240px; justify-content: flex-end;">
+                                <span class="badge badge-neutral">{{ project[4] }}</span>
+
+                                <div style="display: flex; align-items: center; gap: 8px; width: 130px;">
+                                    <div class="progress-track" style="flex: 1;">
+                                        <div class="progress-fill" style="width: {{ percentage }}%;"></div>
+                                    </div>
+                                    <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-primary); min-width: 36px; text-align: right;">
+                                        %{{ "%.0f"|format(percentage) }}
+                                    </span>
+                                </div>
+                            </div>
+                        </summary>
+
+                        <div class="project-details">
+                            <div class="meta-group">
+                                <div>Toplam: <strong>{{ progress_data[0] + progress_data[1] }}</strong></div>
+                                <div>Tamamlanan: <strong style="color: var(--success);">{{ progress_data[0] }}</strong></div>
+                                <div>Kalan: <strong style="color: var(--text-muted);">{{ progress_data[1] }}</strong></div>
+                            </div>
+
+                            <div>
+                                {% if project[4] == "Text" %}
+                                    <a href="/sentence?project_id={{ project[0] }}" class="btn btn-primary btn-sm">Çalışmaya Git →</a>
+                                {% elif project[4] == "Word" %}
+                                    <a href="/word?project_id={{ project[0] }}" class="btn btn-primary btn-sm">Çalışmaya Git →</a>
+                                {% elif project[4] == "IMAGE" %}
+                                    <a href="/image?project_id={{ project[0] }}" class="btn btn-primary btn-sm">Çalışmaya Git →</a>
+                                {% elif project[4] == "OBJECT" %}
+                                    <a href="/object?project_id={{ project[0] }}" class="btn btn-primary btn-sm">Çalışmaya Git →</a>
+                                {% elif project[4] == "NER" %}
+                                    <a href="/NER?project_id={{ project[0] }}" class="btn btn-primary btn-sm">Çalışmaya Git →</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </details>
+                {% endfor %}
+            {% else %}
+                <div class="card" style="text-align: center; padding: 48px 20px;">
+                    <div class="empty-state-icon"></div>
+                    <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 6px;">Henüz Proje Bulunmuyor</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 20px;">
+                        Ana menüden istediğiniz modüle giderek ilk etiketleme projenizi oluşturabilirsiniz.
+                    </p>
+                    <a href="/dashboard" class="btn btn-primary">Ana Menüye Dön</a>
+                </div>
+            {% endif %}
+        </div>
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kayıt Ol - AI Labeling Platform</title>
+    <link rel="stylesheet" href="/static/visual.css">
+</head>
+<body>
+    <main class="auth-page">
+        <section class="auth-editorial">
+            <div class="auth-mark">AI Data Labeling / 2026</div>
+            <h1>Yeni bir<br>veri dili<br>kur.</h1>
+            <p class="auth-caption">Kendi label sisteminizi tanımlayın; sınıflandırma, NER ve bounding-box projelerini tek bir çalışma alanında yönetin.</p>
+        </section>
+        <section class="auth-form-pane">
+            <div class="auth-form">
+                <div class="eyebrow">Session / Register</div>
+                <h2 class="auth-title">Yeni hesap oluştur.</h2>
+                <p class="auth-copy">Veri etiketleme projelerinizi başlatmak için bilgilerinizi girin.</p>
+                <form action="/register" method="post">
+            <div class="form-group">
+                <label for="email">E-posta Adresi</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="adiniz@ornek.com" required autocomplete="email">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Şifre</label>
+                <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required autocomplete="new-password">
+            </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">Kayıt Ol →</button>
+                </form>
+                <div class="auth-switch">Zaten hesabınız var mı? <a href="/login">Giriş yap</a></div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
