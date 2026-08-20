@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Object Detection Etiketleme</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 25px;
+            background-color: #f4f6f9;
+            color: #1f2937;
+        }
+
+        .page-container {
+            max-width: 1500px;
+            margin: 0 auto;
+        }
+
+        .header-bar {
+            background: white;
+            padding: 20px 28px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header-bar h2 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            background-color: #2563eb;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+
+        .btn-info {
+            background-color: #17a2b8;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            padding: 25px;
+        }
+
+        .project-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin: 25px 0;
+        }
+
+        .project-card {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 16px 26px;
+            border-radius: 7px;
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .project-card:hover {
+            border-color: #2563eb;
+            color: #2563eb;
+        }
+
+        .create-form {
+            max-width: 550px;
+            margin: 0 auto;
+        }
+
+        .create-form label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 7px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .file-input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 7px;
+            border: 1px dashed #2563eb;
+            border-radius: 6px;
+            background: #f8faff;
+        }
+
+        .workspace {
+            display: grid;
+            grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
+            gap: 20px;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 17px;
+            background-color: #f1f6ff;
+            border: 1px solid #cfe0ff;
+            border-radius: 8px;
+            margin-bottom: 18px;
+        }
+
+        .stat {
+            font-weight: bold;
+        }
+
+        .stat span {
+            color: #2563eb;
+        }
+
+        .instruction-box {
+            background-color: #fff8e6;
+            border: 1px solid #f4d58d;
+            padding: 16px 18px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+        }
+
+        .instruction-box strong {
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .labels-panel {
+            border: 1px solid #ddd;
+            border-radius: 8px 8px 0 0;
+            padding: 15px;
+            background: #fafafa;
+        }
+
+        .labels-panel strong {
+            margin-right: 12px;
+        }
+
+        .label-buttons {
+            display: inline-flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .label-button {
+            border: none;
+            padding: 8px 15px;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .label-button:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .image-section {
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            padding: 18px;
+            background: white;
+        }
+
+        .image-area {
+            min-height: 420px;
+            background-color: #eef2f7;
+            border-radius: 7px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            overflow: auto;
+        }
+
+        .image-stage {
+            position: relative;
+            display: inline-block;
+            line-height: 0;
+            max-width: 100%;
+            cursor: crosshair;
+        }
+
+        .annotation-img {
+            display: block;
+            max-width: 100%;
+            max-height: 650px;
+            object-fit: contain;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        .bbox-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 10;
+        }
+
+        .selection-box {
+            position: absolute;
+            border: 2px dashed #2563eb;
+            background-color: rgba(37, 99, 235, 0.12);
+            display: none;
+            pointer-events: none;
+        }
+
+        .saved-box {
+            position: absolute;
+            border: 3px solid #2563eb;
+            pointer-events: none;
+        }
+
+        .saved-box-label {
+            position: absolute;
+            left: -3px;
+            top: -27px;
+            padding: 4px 7px;
+            border-radius: 4px 4px 0 0;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            line-height: normal;
+            white-space: nowrap;
+        }
+
+        .image-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-top: 18px;
+        }
+
+        .left-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .status-bar {
+            margin-top: 18px;
+            padding: 15px;
+            background-color: #eefbf3;
+            border: 1px solid #ccebd7;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .right-panel {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 700px;
+        }
+
+        .right-panel h3 {
+            margin-top: 0;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 15px;
+        }
+
+        .box-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            overflow-y: auto;
+            max-height: 600px;
+        }
+
+        .box-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 7px;
+            background-color: #fafafa;
+        }
+
+        .box-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .box-label {
+            color: white;
+            padding: 4px 9px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .coordinates {
+            font-size: 0.8rem;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .empty-output {
+            color: #888;
+            text-align: center;
+            padding: 30px 10px;
+        }
+
+        .csv-button {
+            margin-top: auto;
+            text-align: center;
+            width: 100%;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 18px;
+            border-radius: 7px;
+            border: 1px solid #c3e6cb;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        @media (max-width: 1000px) {
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-bar {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page-container">
+
+    <div class="header-bar">
+
+        <h2>🎯 Object Detection Etiketleme Modülü</h2>
+
+        <div>
+
+            {% if selected_project_id %}
+                <a href="/object" class="btn btn-secondary">
+                    Proje Değiştir
+                </a>
+            {% endif %}
+
+            <a href="/dashboard" class="btn btn-info">
+                Dashboard
+            </a>
+
+            <a href="/logout" class="btn btn-danger">
+                Çıkış Yap
+            </a>
+
+        </div>
+
+    </div>
+
+    {% if not selected_project_id %}
+
+        <div class="card">
+
+            <h3 style="text-align: center;">
+                Mevcut Object Detection Projeleri
+            </h3>
+
+            <div class="project-list">
+
+                {% for project in projects %}
+
+                    <a href="/object?project_id={{ project[0] }}" class="project-card">
+                        🎯 {{ project[2] }}
+                    </a>
+
+                {% else %}
+
+                    <p style="color: #666;">
+                        Henüz kayıtlı Object Detection projesi yok.
+                    </p>
+
+                {% endfor %}
+
+            </div>
+
+            <hr style="margin: 30px 0; border: 0; border-top: 1px solid #ddd;">
+
+            <h3>➕ Yeni Object Detection Projesi Ekle</h3>
+
+            <form
+                action="/create-project-object"
+                method="POST"
+                enctype="multipart/form-data"
+                class="create-form"
+            >
+
+                <label for="project_name">
+                    Proje Adı:
+                </label>
+
+                <input
+                    type="text"
+                    id="project_name"
+                    name="project_name"
+                    class="form-input"
+                    required
+                >
+
+                <label for="files">
+                    Görseller Yükle:
+                </label>
+
+                <input
+                    type="file"
+                    id="files"
+                    name="files"
+                    accept="image/*"
+                    multiple
+                    required
+                    class="file-input"
+                >
+
+                <label><b>Etiketler ve Renkleri:</b></label>
+                <div id="label-rows-container" style="display: flex; flex-direction: column; gap: 6px; margin: 8px 0 10px 0;">
+                    <div class="label-row" style="display: flex; gap: 8px; align-items: center;">
+                        <input type="text" name="label_names" placeholder="1. Etiket (örn. Araba)" required style="flex: 1; padding: 7px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                        <input type="color" name="label_colors" value="#007bff" style="width: 42px; height: 34px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px; padding: 0;">
+                    </div>
+                </div>
+
+                <button type="button" onclick="addLabelRow()" class="btn btn-sm" style="background-color: #6c757d; margin-bottom: 15px; font-size: 0.85rem; padding: 5px 12px; cursor: pointer; display: inline-block;">
+                    + Yeni Etiket Ekle (veya Enter)
+                </button>
+
+                <div style="margin-top: 20px; text-align: right;">
+
+                    <button type="submit" class="btn btn-success">
+                        + Projeyi Oluştur ve Başla
+                    </button>
+
+                </div>
+
+            </form>
+
+            <script>
+                const defaultColors = ['#007bff', '#ffc107', '#28a745', '#dc3545', '#6f42c1', '#fd7e14', '#17a2b8', '#e83e8c'];
+
+                function addLabelRow() {
+                    const container = document.getElementById('label-rows-container');
+                    if (!container) return;
+                    const rowCount = container.children.length + 1;
+                    const nextColor = defaultColors[(rowCount - 1) % defaultColors.length];
+
+                    const row = document.createElement('div');
+                    row.className = 'label-row';
+                    row.style.cssText = 'display: flex; gap: 8px; align-items: center;';
+                    row.innerHTML = `
+                        <input type="text" name="label_names" placeholder="${rowCount}. Etiket" style="flex: 1; padding: 7px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                        <input type="color" name="label_colors" value="${nextColor}" style="width: 42px; height: 34px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px; padding: 0;">
+                        <button type="button" onclick="this.parentElement.remove()" style="background: none; border: none; color: #dc3545; font-size: 1.3rem; cursor: pointer; padding: 0 6px; line-height: 1;" title="Sil">×</button>
+                    `;
+                    container.appendChild(row);
+                    const newInput = row.querySelector('input[type="text"]');
+                    newInput.focus();
+                }
+
+                const labelContainer = document.getElementById('label-rows-container');
+                if (labelContainer) {
+                    labelContainer.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter' && e.target.name === 'label_names') {
+                            e.preventDefault();
+                            addLabelRow();
+                        }
+                    });
+                }
+            </script>
+
+        </div>
+
+    {% else %}
+
+        <div class="workspace">
+
+            <div class="card">
+
+                <div class="stats-bar">
+
+                    <div class="stat">
+                        Proje:
+                        <span>#{{ selected_project_id }}</span>
+                    </div>
+
+                    <div class="stat">
+                        Etiketlenen:
+                        <span>{{ completed_count if completed_count is defined else 0 }}</span>
+                    </div>
+
+                    <div class="stat">
+                        Kalan:
+                        <span>{{ remaining_count }}</span>
+                    </div>
+
+                </div>
+
+                <div class="instruction-box">
+
+                    <strong>ℹ️ Nasıl Etiketlerim?</strong>
+
+                    Görsel üzerinde farenin sol tuşuna basılı tutup sürükle.
+                    Kutuyu oluşturduktan sonra aşağıdaki etiketlerden birine bas.
+
+                </div>
+
+                {% if task_id %}
+
+                    <form
+                        action="/object"
+                        method="POST"
+                        id="object-form"
+                    >
+
+                        <input
+                            type="hidden"
+                            name="project_id"
+                            value="{{ selected_project_id }}"
+                        >
+
+                        <input
+                            type="hidden"
+                            name="task_id"
+                            value="{{ task_id }}"
+                        >
+
+                        <input
+                            type="hidden"
+                            name="x"
+                            id="bbox-x"
+                        >
+
+                        <input
+                            type="hidden"
+                            name="y"
+                            id="bbox-y"
+                        >
+
+                        <input
+                            type="hidden"
+                            name="width"
+                            id="bbox-width"
+                        >
+
+                        <input
+                            type="hidden"
+                            name="height"
+                            id="bbox-height"
+                        >
+
+                        <div class="labels-panel">
+
+                            <strong>Etiketler:</strong>
+
+                            <div class="label-buttons">
+
+                                {% for label in labels %}
+
+                                    <button
+                                        type="submit"
+                                        name="label_id"
+                                        value="{{ label[0] }}"
+                                        class="label-button"
+                                        data-label-button
+                                        disabled
+                                        style="background-color: {{ label[2] or '#2563eb' }};"
+                                    >
+                                        {{ label[1] }}
+                                    </button>
+
+                                {% endfor %}
+
+                            </div>
+
+                        </div>
+
+                        <div class="image-section">
+
+                            <div class="image-area">
+
+                                <div class="image-stage" id="image-stage">
+
+                                    <img
+                                        src="{{ task_content }}"
+                                        id="detection-image"
+                                        class="annotation-img"
+                                        alt="Etiketlenecek Görsel"
+                                    >
+
+                                    <div
+                                        class="bbox-layer"
+                                        id="bbox-layer"
+                                    >
+
+                                        {% for box in current_boxes %}
+
+                                            <div
+                                                class="saved-box"
+                                                style="
+                                                    left: {{ box[4] }}%;
+                                                    top: {{ box[5] }}%;
+                                                    width: {{ box[6] }}%;
+                                                    height: {{ box[7] }}%;
+                                                    border-color: {{ box[3] or '#2563eb' }};
+                                                "
+                                            >
+
+                                                <span
+                                                    class="saved-box-label"
+                                                    style="background-color: {{ box[3] or '#2563eb' }};"
+                                                >
+                                                    {{ box[2] }}
+                                                </span>
+
+                                            </div>
+
+                                        {% endfor %}
+
+                                        <div
+                                            class="selection-box"
+                                            id="selection-box"
+                                        ></div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="image-controls">
+
+                                <div class="left-controls">
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-secondary"
+                                        id="clear-selection"
+                                    >
+                                        ↶ Seçimi Temizle
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </form>
+
+                    <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            {% if prev_task_id %}
+                                <a href="/object?project_id={{ selected_project_id }}&task_id={{ prev_task_id }}" class="btn" style="background-color: #6c757d; text-decoration: none; display: inline-block;">
+                                    ← Önceki Görsel
+                                </a>
+                            {% endif %}
+                        </div>
+
+                        <form
+                            action="/object/complete"
+                            method="POST"
+                            style="margin: 0;"
+                        >
+                            <input
+                                type="hidden"
+                                name="task_id"
+                                value="{{ task_id }}"
+                            >
+                            <input
+                                type="hidden"
+                                name="project_id"
+                                value="{{ selected_project_id }}"
+                            >
+                            <button
+                                type="submit"
+                                class="btn btn-success"
+                            >
+                                Kaydet ve Sonraki →
+                            </button>
+                        </form>
+                    </div>
+
+                {% else %}
+
+                    <div class="alert-success">
+                        🎉 Projedeki tüm görseller tamamlandı!
+                    </div>
+
+                {% endif %}
+
+                <div class="status-bar">
+
+                    <div>
+                        ✅ Object Detection aktif
+                    </div>
+
+                    <div>
+                        Kalan görsel sayısı:
+                        <strong>{{ remaining_count }}</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="right-panel">
+
+                <h3>
+                    Bu Görseldeki Etiketler
+                </h3>
+
+                <ul class="box-list">
+
+                    {% for box in current_boxes %}
+
+                        <li class="box-item">
+
+                            <div class="box-item-header">
+
+                                <span
+                                    class="box-label"
+                                    style="background-color: {{ box[3] or '#2563eb' }};"
+                                >
+                                    {{ box[2] }}
+                                </span>
+
+                                <small>
+                                    #{{ box[0] }}
+                                </small>
+
+                            </div>
+
+                            <div class="coordinates">
+
+                                X: {{ "%.2f"|format(box[4]) }}%
+                                <br>
+
+                                Y: {{ "%.2f"|format(box[5]) }}%
+                                <br>
+
+                                Width: {{ "%.2f"|format(box[6]) }}%
+                                <br>
+
+                                Height: {{ "%.2f"|format(box[7]) }}%
+
+                            </div>
+
+                        </li>
+
+                    {% else %}
+
+                        <li class="empty-output">
+                            Bu görselde henüz işaretlenmiş nesne yok.
+                        </li>
+
+                    {% endfor %}
+
+                </ul>
+
+                <a
+                    href="/export/{{ selected_project_id }}"
+                    class="btn btn-success csv-button"
+                >
+                    ↓ CSV İndir
+                </a>
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+<script>
+
+    const imageStage = document.getElementById("image-stage");
+    const bboxLayer = document.getElementById("bbox-layer");
+    const selectionBox = document.getElementById("selection-box");
+
+    if (imageStage && bboxLayer && selectionBox) {
+
+        let drawing = false;
+
+        let startX = 0;
+        let startY = 0;
+
+        const xInput = document.getElementById("bbox-x");
+        const yInput = document.getElementById("bbox-y");
+        const widthInput = document.getElementById("bbox-width");
+        const heightInput = document.getElementById("bbox-height");
+
+        const labelButtons = document.querySelectorAll("[data-label-button]");
+
+        function disableLabels() {
+
+            labelButtons.forEach(button => {
+                button.disabled = true;
+            });
+
+        }
+
+        function enableLabels() {
+
+            labelButtons.forEach(button => {
+                button.disabled = false;
+            });
+
+        }
+
+        bboxLayer.addEventListener("mousedown", function(event) {
+
+            const rect = bboxLayer.getBoundingClientRect();
+
+            drawing = true;
+
+            startX = event.clientX - rect.left;
+            startY = event.clientY - rect.top;
+
+            selectionBox.style.display = "block";
+
+            selectionBox.style.left = startX + "px";
+            selectionBox.style.top = startY + "px";
+
+            selectionBox.style.width = "0px";
+            selectionBox.style.height = "0px";
+
+            disableLabels();
+
+        });
+
+        bboxLayer.addEventListener("mousemove", function(event) {
+
+            if (!drawing) {
+                return;
+            }
+
+            const rect = bboxLayer.getBoundingClientRect();
+
+            let currentX = event.clientX - rect.left;
+            let currentY = event.clientY - rect.top;
+
+            currentX = Math.max(0, Math.min(currentX, rect.width));
+            currentY = Math.max(0, Math.min(currentY, rect.height));
+
+            const left = Math.min(startX, currentX);
+            const top = Math.min(startY, currentY);
+
+            const width = Math.abs(currentX - startX);
+            const height = Math.abs(currentY - startY);
+
+            selectionBox.style.left = left + "px";
+            selectionBox.style.top = top + "px";
+
+            selectionBox.style.width = width + "px";
+            selectionBox.style.height = height + "px";
+
+        });
+
+        bboxLayer.addEventListener("mouseup", function(event) {
+
+            if (!drawing) {
+                return;
+            }
+
+            drawing = false;
+
+            const rect = bboxLayer.getBoundingClientRect();
+
+            let currentX = event.clientX - rect.left;
+            let currentY = event.clientY - rect.top;
+
+            currentX = Math.max(0, Math.min(currentX, rect.width));
+            currentY = Math.max(0, Math.min(currentY, rect.height));
+
+            const left = Math.min(startX, currentX);
+            const top = Math.min(startY, currentY);
+
+            const width = Math.abs(currentX - startX);
+            const height = Math.abs(currentY - startY);
+
+            if (width < 5 || height < 5) {
+
+                selectionBox.style.display = "none";
+
+                disableLabels();
+
+                return;
+
+            }
+
+            const xPercent = (left / rect.width) * 100;
+            const yPercent = (top / rect.height) * 100;
+
+            const widthPercent = (width / rect.width) * 100;
+            const heightPercent = (height / rect.height) * 100;
+
+            xInput.value = xPercent.toFixed(4);
+            yInput.value = yPercent.toFixed(4);
+
+            widthInput.value = widthPercent.toFixed(4);
+            heightInput.value = heightPercent.toFixed(4);
+
+            enableLabels();
+
+        });
+
+        bboxLayer.addEventListener("mouseleave", function() {
+
+            if (drawing) {
+                drawing = false;
+            }
+
+        });
+
+        const clearButton = document.getElementById("clear-selection");
+
+        if (clearButton) {
+
+            clearButton.addEventListener("click", function() {
+
+                selectionBox.style.display = "none";
+
+                xInput.value = "";
+                yInput.value = "";
+
+                widthInput.value = "";
+                heightInput.value = "";
+
+                disableLabels();
+
+            });
+
+        }
+
+    }
+
+</script>
+
+</body>
+</html>

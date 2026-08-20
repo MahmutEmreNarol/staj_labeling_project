@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Görsel Etiketleme Sistemi</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f4f4f9;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 950px;
+            margin: 0 auto;
+        }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #eef2f5;
+            padding-bottom: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            background-color: #007bff;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+        }
+
+        .project-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .project-card {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 15px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .project-card:hover {
+            border-color: #007bff;
+            color: #007bff;
+        }
+
+        .main-container {
+            display: flex;
+            gap: 30px;
+        }
+
+        .left-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .image-preview-box {
+            width: 100%;
+            min-height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #eef2f5;
+            border: 2px dashed #90b4ce;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 25px;
+            box-sizing: border-box;
+        }
+
+        .annotation-img {
+            max-width: 100%;
+            max-height: 380px;
+            object-fit: contain;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 25px;
+            width: 100%;
+        }
+
+        .remaining-count {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #555;
+            margin-top: auto;
+            align-self: flex-start;
+        }
+
+        .right-panel {
+            flex: 1;
+            border: 2px dashed #ccc;
+            border-radius: 6px;
+            padding: 20px;
+            background-color: #fafafa;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .output-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px 0;
+            overflow-y: auto;
+            max-height: 350px;
+        }
+
+        .output-item {
+            background-color: white;
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            font-size: 0.95rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .thumb-img {
+            width: 45px;
+            height: 45px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        .label-badge {
+            background-color: #9c27b0;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 6px;
+            font-weight: bold;
+            border: 1px solid #c3e6cb;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <div class="header-bar">
+        <h2>🖼️ Görsel Etiketleme Modülü</h2>
+
+        <div>
+            {% if selected_project_id %}
+                <a href="/image" class="btn" style="background-color: #6c757d; margin-right: 10px;">Proje Değiştir</a>
+            {% endif %}
+
+            <a href="/dashboard" class="btn" style="background-color: #17a2b8; margin-right: 10px;">Dashboard</a>
+            <a href="/logout" class="btn btn-danger">Çıkış Yap</a>
+        </div>
+    </div>
+
+    {% if not selected_project_id %}
+
+        <h3 style="text-align: center;">Mevcut Görsel Projeleri</h3>
+
+        <div class="project-list">
+            {% for project in projects %}
+                <a href="/image?project_id={{ project[0] }}" class="project-card">
+                    🖼️ {{ project[2] }}
+                </a>
+            {% else %}
+                <p style="color: #666;">Henüz kayıtlı görsel projesi yok.</p>
+            {% endfor %}
+        </div>
+
+        <hr style="margin: 30px 0; border: 0; border-top: 1px solid #ddd;">
+
+        <h3>➕ Yeni Görsel Projesi Ekle</h3>
+
+        <form action="/create-project-image" method="POST" enctype="multipart/form-data" style="text-align: left; max-width: 500px; margin: 0 auto;">
+
+            <label for="project_name"><b>Proje Adı:</b></label>
+
+            <input
+                type="text"
+                id="project_name"
+                name="project_name"
+                required
+                style="width: 100%; padding: 8px; margin: 8px 0 15px 0; box-sizing: border-box;"
+            >
+
+            <label for="files"><b>Görseller Yükle (Çoklu Seçim Desteklenir):</b></label>
+
+            <input
+                type="file"
+                id="files"
+                name="files"
+                accept="image/*"
+                multiple
+                required
+                style="width: 100%; padding: 10px; margin: 8px 0 15px 0; border: 1px dashed #007bff; background: #f8faff; box-sizing: border-box;"
+            >
+
+            <label><b>Etiketler ve Renkleri:</b></label>
+            <div id="label-rows-container" style="display: flex; flex-direction: column; gap: 6px; margin: 8px 0 10px 0;">
+                <div class="label-row" style="display: flex; gap: 8px; align-items: center;">
+                    <input type="text" name="label_names" placeholder="1. Etiket (örn. Taşıt)" required style="flex: 1; padding: 7px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                    <input type="color" name="label_colors" value="#007bff" style="width: 42px; height: 34px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px; padding: 0;">
+                </div>
+            </div>
+
+            <button type="button" onclick="addLabelRow()" class="btn btn-sm" style="background-color: #6c757d; margin-bottom: 15px; font-size: 0.85rem; padding: 5px 12px; cursor: pointer; display: inline-block;">
+                + Yeni Etiket Ekle (veya Enter)
+            </button>
+
+            <div style="margin-top: 15px; text-align: right;">
+                <button type="submit" class="btn btn-success">
+                    + Görselleri Yükle ve Başla
+                </button>
+            </div>
+
+        </form>
+
+        <script>
+            const defaultColors = ['#007bff', '#ffc107', '#28a745', '#dc3545', '#6f42c1', '#fd7e14', '#17a2b8', '#e83e8c'];
+
+            function addLabelRow() {
+                const container = document.getElementById('label-rows-container');
+                if (!container) return;
+                const rowCount = container.children.length + 1;
+                const nextColor = defaultColors[(rowCount - 1) % defaultColors.length];
+
+                const row = document.createElement('div');
+                row.className = 'label-row';
+                row.style.cssText = 'display: flex; gap: 8px; align-items: center;';
+                row.innerHTML = `
+                    <input type="text" name="label_names" placeholder="${rowCount}. Etiket" style="flex: 1; padding: 7px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                    <input type="color" name="label_colors" value="${nextColor}" style="width: 42px; height: 34px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px; padding: 0;">
+                    <button type="button" onclick="this.parentElement.remove()" style="background: none; border: none; color: #dc3545; font-size: 1.3rem; cursor: pointer; padding: 0 6px; line-height: 1;" title="Sil">×</button>
+                `;
+                container.appendChild(row);
+                const newInput = row.querySelector('input[type="text"]');
+                newInput.focus();
+            }
+
+            const labelContainer = document.getElementById('label-rows-container');
+            if (labelContainer) {
+                labelContainer.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' && e.target.name === 'label_names') {
+                        e.preventDefault();
+                        addLabelRow();
+                    }
+                });
+            }
+        </script>
+
+    {% else %}
+
+        <div class="main-container">
+
+            <div class="left-panel">
+
+                <div class="image-preview-box">
+
+                    {% if task_id %}
+                        <img src="{{ task_content }}" alt="Etiketlenecek Görsel" class="annotation-img">
+                    {% else %}
+                        <p style="color: #666; font-size: 1.1rem;">
+                            Resim bulunamadı veya tüm resimler tamamlandı.
+                        </p>
+                    {% endif %}
+
+                </div>
+
+                {% if task_id %}
+
+                    <form action="/image" method="POST" style="width: 100%;">
+
+                        <input type="hidden" name="project_id" value="{{ selected_project_id }}">
+                        <input type="hidden" name="task_id" value="{{ task_id }}">
+
+                        <div class="btn-group">
+
+                            {% for label in labels %}
+
+                                <button
+                                    type="submit"
+                                    name="label_id"
+                                    value="{{ label[0] }}"
+                                    class="btn"
+                                    style="background-color: {{ label[2] or '#007bff' }};"
+                                >
+                                    {{ label[1] }}
+                                </button>
+
+                            {% endfor %}
+
+                        </div>
+
+                    </form>
+
+                {% else %}
+
+                    <div class="alert-success">
+                        🎉 Projedeki tüm görseller etiketlendi!
+                    </div>
+
+                {% endif %}
+
+                <div class="remaining-count" style="margin-top: 25px;">
+                    Kalan görsel sayısı: <span>{{ remaining_count }}</span>
+                </div>
+
+            </div>
+
+            <div class="right-panel">
+
+                <h3>Etiketlenen Görseller</h3>
+
+                <ul class="output-list">
+
+                    {% for item in completed_tasks %}
+
+                        <li class="output-item" style="flex-direction: column; align-items: stretch; gap: 8px;">
+
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+
+                                <img
+                                    src="{{ item[1] if item|length > 2 else item[0] }}"
+                                    class="thumb-img"
+                                    alt="küçük resim"
+                                >
+
+                                <div>
+
+                                    <span class="label-badge">
+                                        Etiket: {{ item[2] if item|length > 2 else item[1] }}
+                                    </span>
+
+                                    <details style="display: inline-block; margin-left: 5px;">
+
+                                        <summary
+                                            class="btn"
+                                            style="cursor: pointer; background-color: #9c27b0; color: white; padding: 2px 6px; font-size: 0.8rem; border-radius: 4px;"
+                                        >
+                                            Düzenle
+                                        </summary>
+
+                                        <form
+                                            action="/update-annotation"
+                                            method="POST"
+                                            style="margin-top: 8px; display: flex; gap: 4px; flex-wrap: wrap;"
+                                        >
+
+                                            <input type="hidden" name="project_id" value="{{ selected_project_id }}">
+                                            <input type="hidden" name="task_id" value="{{ item[0] }}">
+                                            <input type="hidden" name="page_type" value="image">
+
+                                            {% for label in labels %}
+
+                                                <button
+                                                    type="submit"
+                                                    name="label_id"
+                                                    value="{{ label[0] }}"
+                                                    class="btn"
+                                                    style="padding: 2px 6px; font-size: 0.75rem; background-color: {{ label[2] or '#007bff' }};"
+                                                >
+                                                    {{ label[1] }}
+                                                </button>
+
+                                            {% endfor %}
+
+                                        </form>
+
+                                    </details>
+
+                                </div>
+
+                            </div>
+
+                        </li>
+
+                    {% else %}
+
+                        <p style="color: #888;">
+                            Henüz etiketlenmiş görsel yok.
+                        </p>
+
+                    {% endfor %}
+
+                </ul>
+
+                <a
+                    href="/export/{{ selected_project_id }}"
+                    class="btn btn-success"
+                    style="margin-top: auto; text-align: center;"
+                >
+                    CSV İndir
+                </a>
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Projeler</title>
+
+    <style>
+
+        .project-summary {
+            display: grid;
+            grid-template-columns: 1fr 200px 100px;
+                align-items: center;
+
+             padding: 18px 24px;
+            margin-bottom: 12px;
+
+            border: 1px solid #ccc;
+            border-radius: 8px;
+
+            background-color: white;
+            cursor: pointer;
+
+                        }
+
+        .projects-container {
+            width: 80%;
+            margin: 30px auto;
+}
+
+    </style>
+
+</head>
+
+<body>
+
+<a href="/dashboard" class="btn">Ana Menü</a>
+    <h2>
+        Merhabalar, Projelere hoş geldiniz.
+        Lütfen çalışmak istediğiniz veya ilerlemenizi takip etmek istediğiniz projenizi seçiniz.
+    </h2>
+
+
+    <div class="projects-container">
+
+        {% for project in projects %}
+            {% set progress_data = calculate_progress(project[0]) %}
+            <details class="project">
+
+                <summary class="project-summary">
+
+                    <span>{{ project[2] }}</span>
+
+                    <span>{{project[4]}}</span>
+
+                    <span>%{{ "%.1f"|format(calculate_progress(project[0])[2]) }}</span>
+
+                </summary>
+
+
+                <div class="project-details">
+
+                    <p>Toplam veri: {{ progress_data[0] + progress_data[1] }} </p>
+
+                    <p>Tamamlanan: {{ progress_data[0] }}</p>
+
+                    <p>Kalan {{ progress_data[1] }}</p>
+
+                    {% if project[4] == "Text" %}
+                        <a href="/sentence?project_id={{ project[0] }}">Çalışmaya Git</a>
+
+                        {% elif project[4] == "Word" %}
+                            <a href="/word?project_id={{ project[0] }}">Çalışmaya Git</a>
+
+                        {% elif project[4] == "IMAGE" %}
+                            <a href="/image?project_id={{ project[0] }}">Çalışmaya Git</a>
+
+                        {% elif project[4] == "OBJECT" %}
+                        <a href="/object?project_id={{ project[0] }}">Çalışmaya Git</a>
+                        {% elif project[4] == "NER" %}
+                        <a href="/NER?project_id={{ project[0] }}">Çalışmaya Git</a>
+
+                    {% endif %}
+
+                </div>
+
+            </details>
+
+        {% endfor %}
+
+    </div>
+
+</body>
+
+</html>
