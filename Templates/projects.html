@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projelerim - AI Labeling Platform</title>
+    <link rel="stylesheet" href="/static/mercury.css">
+    <style>
+        .project-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 16px;
+            overflow: hidden;
+            transition: all 0.15s ease;
+        }
+        .project-card:hover {
+            border-color: #CBD5E1;
+            box-shadow: var(--shadow-md);
+        }
+        .project-summary {
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            cursor: pointer;
+            list-style: none;
+            user-select: none;
+        }
+        .project-summary::-webkit-details-marker {
+            display: none;
+        }
+        .project-details {
+            padding: 20px 24px;
+            background: #F8FAFC;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .meta-group {
+            display: flex;
+            gap: 20px;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        .meta-group strong {
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+
+    <header class="app-header">
+        <a href="/dashboard" class="brand">
+            <div class="brand-icon">AI</div>
+            <span>AI Labeling Platform</span>
+        </a>
+        <div class="header-nav">
+            <a href="/dashboard" class="btn btn-secondary btn-sm">← Ana Menü</a>
+            <a href="/logout" class="btn btn-danger btn-sm">Çıkış Yap</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <div style="margin-bottom: 24px;">
+            <h1 style="font-size: 1.6rem; font-weight: 700; color: var(--text-primary); letter-spacing: -0.02em;">
+                Projeler ve İlerleme Takibi
+            </h1>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 4px;">
+                Tüm etiketleme projelerinizi görüntüleyin, ilerleme durumlarını inceleyin ve kaldığınız yerden devam edin.
+            </p>
+        </div>
+
+        <div class="projects-list">
+            {% if projects %}
+                {% for project in projects %}
+                    {% set progress_data = calculate_progress(project[0]) %}
+                    {% set percentage = progress_data[2] %}
+                    
+                    <details class="project-card">
+                        <summary class="project-summary">
+                            <div style="display: flex; align-items: center; gap: 14px; flex: 1;">
+                                <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted);">#{{ project[0] }}</span>
+                                <div>
+                                    <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--text-primary); margin-bottom: 2px;">
+                                        {{ project[2] }}
+                                    </h3>
+                                    <span style="font-size: 0.8rem; color: var(--text-muted);">{{ project[3] or 'Açıklama yok' }}</span>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; align-items: center; gap: 16px; min-width: 240px; justify-content: flex-end;">
+                                <span class="badge badge-primary">{{ project[4] }}</span>
+
+                                <div style="display: flex; align-items: center; gap: 8px; width: 130px;">
+                                    <div class="progress-track" style="flex: 1;">
+                                        <div class="progress-fill" style="width: {{ percentage }}%;"></div>
+                                    </div>
+                                    <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-primary); min-width: 36px; text-align: right;">
+                                        %{{ "%.0f"|format(percentage) }}
+                                    </span>
+                                </div>
+                            </div>
+                        </summary>
+
+                        <div class="project-details">
+                            <div class="meta-group">
+                                <div>Toplam: <strong>{{ progress_data[0] + progress_data[1] }}</strong></div>
+                                <div>Tamamlanan: <strong style="color: var(--success);">{{ progress_data[0] }}</strong></div>
+                                <div>Kalan: <strong style="color: var(--text-muted);">{{ progress_data[1] }}</strong></div>
+                            </div>
+
+                            <div>
+                                {% if project[4] == "Text" %}
+                                    <a href="/sentence?project_id={{ project[0] }}" class="btn btn-primary btn-sm">Çalışmaya Git →</a>
+                                {% elif project[4] == "Word" %}
+                                    <a href="/word?project_id={{ project[0] }}" class="btn btn-primary btn-sm">Çalışmaya Git →</a>
+                                {% elif project[4] == "IMAGE" %}
+                                    <a href="/image?project_id={{ project[0] }}" class="btn btn-primary btn-sm">Çalışmaya Git →</a>
+                                {% elif project[4] == "OBJECT" %}
+                                    <a href="/object?project_id={{ project[0] }}" class="btn btn-primary btn-sm">Çalışmaya Git →</a>
+                                {% elif project[4] == "NER" %}
+                                    <a href="/NER?project_id={{ project[0] }}" class="btn btn-primary btn-sm">Çalışmaya Git →</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </details>
+                {% endfor %}
+            {% else %}
+                <div class="card" style="text-align: center; padding: 48px 20px;">
+                    <div style="font-size: 2.5rem; margin-bottom: 12px;">📁</div>
+                    <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 6px;">Henüz Proje Bulunmuyor</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 20px;">
+                        Ana menüden istediğiniz modüle giderek ilk etiketleme projenizi oluşturabilirsiniz.
+                    </p>
+                    <a href="/dashboard" class="btn btn-primary">Ana Menüye Dön</a>
+                </div>
+            {% endif %}
+        </div>
+    </main>
+
+</body>
+</html>

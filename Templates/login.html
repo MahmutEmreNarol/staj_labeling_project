@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş Yap - AI Labeling Platform</title>
+    <link rel="stylesheet" href="/static/mercury.css">
+</head>
+<body style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px;">
+
+    <div class="card" style="max-width: 440px; width: 100%; padding: 36px 28px;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 24px;">
+            <div class="brand-icon">AI</div>
+            <span style="font-size: 1.1rem; font-weight: 700; letter-spacing: -0.02em;">Labeling Platform</span>
+        </div>
+
+        <h1 style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 6px;">
+            Hesabınıza Giriş Yapın
+        </h1>
+        <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 24px;">
+            Etiketleme projelerinize devam etmek için bilgilerinizi girin.
+        </p>
+
+        <form action="/login" method="post">
+            <div class="form-group">
+                <label for="email">E-posta Adresi</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="adiniz@ornek.com" required autocomplete="email">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Şifre</label>
+                <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block" style="padding: 12px; margin-top: 10px;">
+                Giriş Yap
+            </button>
+        </form>
+
+        <div style="margin-top: 24px; text-align: center; font-size: 0.875rem; color: var(--text-muted);">
+            Hesabınız yok mu? <a href="/register" style="color: var(--primary); font-weight: 600; text-decoration: none;">Kayıt Ol</a>
+        </div>
+    </div>
+
+</body>
+</html>

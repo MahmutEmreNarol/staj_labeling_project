@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - AI Labeling Platform</title>
+    <link rel="stylesheet" href="/static/mercury.css">
+    <style>
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 20px;
+            margin-top: 24px;
+        }
+        .module-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+        }
+        .module-card:hover {
+            border-color: #CBD5E1;
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+        .module-icon-box {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="app-header">
+        <a href="/dashboard" class="brand">
+            <div class="brand-icon">AI</div>
+            <span>AI Labeling Platform</span>
+        </a>
+        <div class="header-nav">
+            <a href="/projects" class="btn btn-secondary btn-sm">📁 Projelerim</a>
+            <a href="/logout" class="btn btn-danger btn-sm">Çıkış Yap</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <div style="margin-bottom: 8px;">
+            <h1 style="font-size: 1.75rem; font-weight: 700; color: var(--text-primary); letter-spacing: -0.03em;">
+                Hoş Geldiniz 👋
+            </h1>
+            <p style="font-size: 0.95rem; color: var(--text-muted); margin-top: 4px;">
+                Çalışmak veya yeni bir veri seti oluşturmak istediğiniz etiketleme modülünü seçiniz.
+            </p>
+        </div>
+
+        <div class="module-grid">
+
+            <!-- 1. Cümle Sınıflandırma -->
+            <div class="module-card">
+                <div>
+                    <div class="module-icon-box" style="background: #EFF6FF; color: #2563EB;">💬</div>
+                    <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 6px;">Cümle Sınıflandırma</h3>
+                    <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px;">
+                        Metinleri ve cümleleri duygu durumuna, konuya veya özel kategorilere göre etiketleyin.
+                    </p>
+                </div>
+                <a href="/sentence" class="btn btn-primary btn-block">Modüle Git →</a>
+            </div>
+
+            <!-- 2. Kelime Etiketleme -->
+            <div class="module-card">
+                <div>
+                    <div class="module-icon-box" style="background: #FEF3C7; color: #D97706;">📝</div>
+                    <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 6px;">Kelime Etiketleme</h3>
+                    <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px;">
+                        Tek tek sözcükleri morfolojik veya anlamsal türlerine (isim, fiil, sıfat vb.) göre sınıflandırın.
+                    </p>
+                </div>
+                <a href="/word" class="btn btn-primary btn-block">Modüle Git →</a>
+            </div>
+
+            <!-- 3. Görsel Sınıflandırma -->
+            <div class="module-card">
+                <div>
+                    <div class="module-icon-box" style="background: #ECFDF5; color: #059669;">🖼️</div>
+                    <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 6px;">Görsel Sınıflandırma</h3>
+                    <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px;">
+                        Görselleri toplu yükleyin ve tek tıkla kategori veya sınıflarına göre etiketleyin.
+                    </p>
+                </div>
+                <a href="/image" class="btn btn-primary btn-block">Modüle Git →</a>
+            </div>
+
+            <!-- 4. Varlık İsmi Tanıma (NER) -->
+            <div class="module-card">
+                <div>
+                    <div class="module-icon-box" style="background: #F3E8FF; color: #7C3AED;">🏷️</div>
+                    <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 6px;">Varlık İsmi Tanıma (NER)</h3>
+                    <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px;">
+                        Cümle içindeki kişi, kurum, yer ve özel varlıkları seçerek hassas etiketler atayın.
+                    </p>
+                </div>
+                <a href="/NER" class="btn btn-primary btn-block">Modüle Git →</a>
+            </div>
+
+            <!-- 5. Obje Tespiti (Object Detection) -->
+            <div class="module-card">
+                <div>
+                    <div class="module-icon-box" style="background: #FEE2E2; color: #DC2626;">🎯</div>
+                    <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 6px;">Obje Tespiti (Bounding Box)</h3>
+                    <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px;">
+                        Görseller üzerindeki nesneleri koordinat tabanlı sınırlayıcı kutular (Bounding Box) ile tespit edin.
+                    </p>
+                </div>
+                <a href="/object" class="btn btn-primary btn-block">Modüle Git →</a>
+            </div>
+
+            <!-- 6. Tüm Projeler -->
+            <div class="module-card" style="background: #F8FAFC; border-style: dashed;">
+                <div>
+                    <div class="module-icon-box" style="background: #E2E8F0; color: #334155;">📊</div>
+                    <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 6px;">Tüm Projeler</h3>
+                    <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px;">
+                        Oluşturulan tüm projeleri, tamamlanan veri oranlarını ve genel ilerleme durumunu inceleyin.
+                    </p>
+                </div>
+                <a href="/projects" class="btn btn-secondary btn-block">Projeleri Görüntüle →</a>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+</html>

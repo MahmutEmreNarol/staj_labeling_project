@@ -1,0 +1,385 @@
+STAJ PROJESİ - AI Veri Etiketleme Platformu (Label Studio Benzeri)
+
+============================================================
+
+1. PROJENİN AMACI
+   ============================================================
+
+Makine öğrenmesi ve yapay zekâ projelerinde modellerin eğitilebilmesi için etiketlenmiş verilere ihtiyaç vardır.
+
+Bu projede amaç, kullanıcıların veri yükleyip etiketleme yapabileceği web tabanlı bir sistem geliştirmektir.
+
+Geliştirilecek sistem temel olarak aşağıdaki görevleri destekleyecektir:
+
+* Metin Sınıflandırma (Text Classification)
+* Varlık Tanıma (NER - Named Entity Recognition)
+* Resim Sınıflandırma (Image Classification)
+
+Bu proje, açık kaynaklı Label Studio ürününün temel mantığını anlamak ve daha sade bir versiyonunu geliştirmek amacıyla yapılacaktır.
+
+============================================================
+2. ARAŞTIRMA GÖREVİ (İLK 2 GÜN)
+===============================
+
+Kod yazmaya başlamadan önce aşağıdaki konular araştırılmalıdır.
+
+---
+
+## 2.1 Label Studio Nedir?
+
+Araştırılacak konular:
+
+* Label Studio hangi problemi çözüyor?
+* Kimler kullanıyor?
+* Veri etiketleme neden gerekli?
+* Hangi veri tiplerini destekliyor?
+* Annotation nedir?
+* Label nedir?
+* Task nedir?
+* Project nedir?
+
+---
+
+## 2.2 Makine Öğrenmesinde Veri Etiketleme
+
+Araştırılacak konular:
+
+* Supervised Learning
+* Dataset
+* Training Data
+* Ground Truth
+* Annotation
+
+---
+
+## 2.3 NER (Named Entity Recognition)
+
+Örnek:
+
+"Ahmet bugün İstanbul'da Microsoft ofisini ziyaret etti."
+
+Etiketler:
+
+* Ahmet → PERSON
+* İstanbul → LOCATION
+* Microsoft → ORGANIZATION
+
+Araştırılacak:
+
+* NER nedir?
+* BIO formatı nedir?
+* NER verileri nasıl saklanır?
+
+============================================================
+3. DESTEKLENECEK ANNOTATION TİPLERİ
+===================================
+
+Bu projede 3 farklı annotation tipi geliştirilecektir.
+
+---
+
+## A. TEXT CLASSIFICATION
+
+Örnek Metin:
+
+"Bu telefonun kamerası çok başarılı."
+
+Etiketler:
+
+* Pozitif
+* Negatif
+* Nötr
+
+Amaç:
+
+Bir metnin hangi kategoriye ait olduğunu belirlemek.
+
+Kullanım Alanları:
+
+* Sentiment Analysis
+* Spam Tespiti
+* Haber Kategorilendirme
+* Müşteri Geri Bildirimi Analizi
+
+---
+
+## B. NAMED ENTITY RECOGNITION (NER)
+
+Örnek:
+
+"Ahmet bugün İstanbul'da Microsoft ofisini ziyaret etti."
+
+Etiketler:
+
+* Ahmet → PERSON
+* İstanbul → LOCATION
+* Microsoft → ORGANIZATION
+
+Amaç:
+
+Metin içerisindeki önemli varlıkları işaretlemek.
+
+Kullanım Alanları:
+
+* Doküman Analizi
+* Hukuk Sistemleri
+* Sağlık Sistemleri
+* Chatbotlar
+
+---
+
+## C. IMAGE CLASSIFICATION
+
+Örnek:
+
+* Resim → Kedi
+* Resim → Köpek
+* Resim → Araba
+
+Amaç:
+
+Bir görüntünün hangi sınıfa ait olduğunu belirlemek.
+
+Kullanım Alanları:
+
+* Ürün Kategorilendirme
+* Kalite Kontrol
+* Görsel Arama
+
+============================================================
+4. FAZ 1 - VERİTABANI TASARIMI
+==============================
+
+Veritabanı: SQLite
+
+---
+
+## 4.1 ER Diagram Hazırlama
+
+Aşağıdaki varlıklar arasındaki ilişkiler çıkarılacaktır:
+
+* User
+* Project
+* Dataset
+* Task
+* Annotation
+* Label
+
+---
+
+## 4.2 Veritabanı Tasarımı
+
+Tasarlanacak tablolar:
+
+* users
+* projects
+* datasets
+* tasks
+* labels
+* annotations
+
+Ek tablolar:
+
+entity_annotations
+
+NER için kullanılacaktır.
+
+Alanlar:
+
+* start_offset
+* end_offset
+* selected_text
+
+bounding_boxes
+
+Object Detection için kullanılacaktır.
+
+Alanlar:
+
+* task_id
+* label_id
+* x
+* y
+* width
+* height
+
+============================================================
+5. YAPILACAK EKRANLAR
+=====================
+
+---
+
+## 5.1 Login Ekranı
+
+Alanlar:
+
+* Email
+* Şifre
+
+İşlemler:
+
+* Giriş Yap
+* Çıkış Yap
+
+---
+
+## 5.2 Dashboard
+
+Gösterilecek bilgiler:
+
+* Toplam Proje
+* Toplam Dataset
+* Toplam Annotation
+* Kullanıcı Sayısı
+
+---
+
+## 5.3 Proje Listesi
+
+Kullanıcı:
+
+* Projeleri görebilir
+* Yeni proje oluşturabilir
+
+Kolonlar:
+
+* Proje Adı
+* Annotation Tipi
+* Oluşturulma Tarihi
+
+---
+
+## 5.4 Yeni Proje Oluşturma
+
+Alanlar:
+
+* Proje Adı
+* Açıklama
+
+Görev Tipi:
+
+* Text Classification
+* NER
+* Image Classification
+* Object Detection
+
+---
+
+## 5.5 Dataset Yükleme Ekranı
+
+Desteklenecek Veri Türleri:
+
+Text:
+
+* CSV
+* JSON
+* TXT
+
+Image:
+
+* PNG
+* JPEG
+* JPG
+
+---
+
+## 5.6 Görev Listesi
+
+Gösterilecek:
+
+* Görev ID
+* Durum
+* Atanan Kullanıcı
+* Annotation Sayısı
+
+============================================================
+6. ANNOTATION EKRANLARI
+=======================
+
+---
+
+## 6.1 Text Classification Ekranı
+
+Sol tarafta:
+
+* Metin
+
+Sağ tarafta:
+
+* Etiketler
+
+Örnek:
+
+( ) Pozitif
+( ) Negatif
+( ) Nötr
+
+Butonlar:
+
+* Kaydet
+* Sonraki
+
+---
+
+## 6.2 NER Ekranı
+
+Metin gösterilir.
+
+Kullanıcı fare ile kelime veya kelime grubu seçer.
+
+Açılan menü:
+
+* PERSON
+* LOCATION
+* ORGANIZATION
+
+Seçilen alan renklendirilir.
+
+Butonlar:
+
+* Kaydet
+* Geri Al
+* Sonraki
+
+---
+
+## 6.3 Image Classification Ekranı
+
+Resim gösterilir.
+
+Altında etiketler bulunur.
+
+Örnek:
+
+( ) Kedi
+( ) Köpek
+( ) Araba
+
+Butonlar:
+
+* Kaydet
+* Sonraki
+
+---
+
+## 6.4 Object Detection Ekranı
+
+Resim gösterilir.
+
+Kullanıcı mouse ile kutu çizer.
+
+Kutuyu seçince etiket atanır.
+
+Örnek etiketler:
+
+* Person
+* Car
+* Bicycle
+
+Sistem aşağıdaki bilgileri saklar:
+
+* x
+* y
+* width
+* height
+* label
